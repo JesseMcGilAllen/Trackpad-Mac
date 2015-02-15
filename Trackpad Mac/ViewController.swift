@@ -11,16 +11,18 @@ import CoreBluetooth
 
 class ViewController: NSViewController, CBCentralManagerDelegate {
     
-    var centralManager : CBCentralManager!
+    let centralManager : CBCentralManager!
     
     required init?(coder: NSCoder) {
+        centralManager = CBCentralManager()
         super.init(coder: coder)
+        
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        centralManager.delegate = self
         
-        centralManager = CBCentralManager(delegate: self, queue: nil)
         
         centralManager.scanForPeripheralsWithServices(nil, options: nil)
 
