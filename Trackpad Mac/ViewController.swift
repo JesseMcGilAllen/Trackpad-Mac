@@ -7,11 +7,22 @@
 //
 
 import Cocoa
+import CoreBluetooth
 
-class ViewController: NSViewController {
+class ViewController: NSViewController, CBCentralManagerDelegate {
+    
+    var centralManager : CBCentralManager!
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        centralManager = CBCentralManager(delegate: self, queue: nil)
+        
+        centralManager.scanForPeripheralsWithServices(nil, options: nil)
 
         // Do any additional setup after loading the view.
     }
@@ -20,6 +31,14 @@ class ViewController: NSViewController {
         didSet {
         // Update the view, if already loaded.
         }
+    }
+    
+    func centralManagerDidUpdateState(central: CBCentralManager!) {
+        println(central.state.rawValue)
+    }
+    
+    func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
+        println("Discovered \(peripheral.name)!")
     }
 
 
