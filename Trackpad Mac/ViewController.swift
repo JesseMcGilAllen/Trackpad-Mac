@@ -97,19 +97,11 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             println(characteristic.UUIDString)
             println(trackingCharacteristicUUID.UUIDString)
             
-            
-            
             if characteristicUUID == trackingCharacteristicUUID {
                 peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
                 println("Success!")
             }
-            
-            
         }
     }
-    
-
-
-
 }
 
