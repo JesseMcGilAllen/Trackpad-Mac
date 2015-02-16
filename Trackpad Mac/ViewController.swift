@@ -11,20 +11,22 @@ import CoreBluetooth
 
 class ViewController: NSViewController, CBCentralManagerDelegate {
     
-    let centralManager : CBCentralManager!
+    let trackpadServiceUUID = CBUUID(string: "AB8A3096-046C-49DD-8709-0361EC31EFED")
+    var centralManager : CBCentralManager!
+    var discoveredPeripheral : CBPeripheral!
     
     required init?(coder: NSCoder) {
-        centralManager = CBCentralManager()
+        
         super.init(coder: coder)
         
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        centralManager.delegate = self
+        centralManager = CBCentralManager(delegate: self, queue: nil)
         
         
-        centralManager.scanForPeripheralsWithServices(nil, options: nil)
+        
 
         // Do any additional setup after loading the view.
     }
@@ -36,11 +38,32 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
     }
     
     func centralManagerDidUpdateState(central: CBCentralManager!) {
-        println(central.state.rawValue)
+    
+        if central.state == .PoweredOn {
+            
+            central.scanForPeripheralsWithServices([trackpadServiceUUID], options: nil)
+        }
     }
     
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
-        println("Discovered \(peripheral.name)!")
+        println("Discovered \(peripheral.identifier), RSSI: \(RSSI)!")
+        
+        discoveredPeripheral = peripheral
+        centralManager.connectPeripheral(discoveredPeripheral, options: nil)
+        
+        centralManager.stopScan()
+    }
+    
+    func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
+        println("Connected!")
+    }
+    
+    func centralManager(central: CBCentralManager!, didFailToConnectPeripheral peripheral: CBPeripheral!, error: NSError!) {
+        println("Failed to Connect :(")
+        
+        if error != nil {
+            println("Error publishing service: \(error.localizedDescription)")
+        }
     }
 
 
