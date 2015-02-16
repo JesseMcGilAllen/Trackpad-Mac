@@ -38,8 +38,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
     }
     
     func centralManagerDidUpdateState(central: CBCentralManager!) {
-    
+    println("State: \(central.state.rawValue)")
+        
         if central.state == .PoweredOn {
+            println("Powered On!")
             
             central.scanForPeripheralsWithServices([trackpadServiceUUID], options: nil)
         }
