@@ -1,5 +1,4 @@
-//
-//  ViewController.swift
+//w//  ViewController.swift
 //  Trackpad Mac
 //
 //  Created by Jesse McGil Allen on 2/14/15.
@@ -101,7 +100,27 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
                 peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
                 println("Success!")
             }
+            
         }
     }
+    
+    func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
+        
+        println("data updated")
+        if error != nil {
+            println("Error updating characteristic: \(error.localizedDescription)")
+        }
+        
+        let updatedData = characteristic.value()
+        let count = updatedData.length / sizeof(UInt32)
+        
+        var dataArray = [UInt32](count: count, repeatedValue: 0)
+        
+        updatedData.getBytes(&dataArray, length:count * sizeof(UInt32))
+        
+        println(dataArray)
+        
+    }
 }
+
 
