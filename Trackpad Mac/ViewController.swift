@@ -49,20 +49,34 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
     
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
-        println("Discovered \(peripheral.identifier), RSSI: \(RSSI)!")
         
-        discoveredPeripheral = peripheral
-        centralManager.connectPeripheral(discoveredPeripheral, options: nil)
+        println("discoveredPeripheral: \(discoveredPeripheral)")
+        println("peripheral: \(peripheral)")
         
-        centralManager.stopScan()
+        if discoveredPeripheral != peripheral {
+            discoveredPeripheral = peripheral
+            println("Discovered \(discoveredPeripheral.identifier), RSSI: \(RSSI)!")
+        }
+        
+        
+        
+        centralManager.connectPeripheral(peripheral, options: nil)
+        
+        
+        
+        
     }
     
     func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
         println("Connected!")
         
-        peripheral.delegate = self
+        centralManager.stopScan()
         
+        peripheral.delegate = self
+
         peripheral.discoverServices([trackpadServiceUUID])
+        
+        
         
     }
     
@@ -81,7 +95,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
         for service in peripheral.services {
-            peripheral.discoverCharacteristics([trackingCharacteristicUUID], forService: service as! CBService)
+            discoveredPeripheral.discoverCharacteristics([trackingCharacteristicUUID], forService: service as! CBService)
         }
     }
     
@@ -97,7 +111,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             println(trackingCharacteristicUUID.UUIDString)
             
             if characteristicUUID == trackingCharacteristicUUID {
-                peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
+               discoveredPeripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
                 println("Success!")
             }
             
