@@ -119,6 +119,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             println("Error updating notification for characteristic: \(error.localizedDescription)")
         }
 
+        println("Notification Value: \(characteristic.isNotifying)")
         println("Successfully subscribed to updates on \(characteristic)")
     }
     
