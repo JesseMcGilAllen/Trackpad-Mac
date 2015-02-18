@@ -112,6 +112,15 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
         }
     }
+
+    func peripheral(peripheral: CBPeripheral!, didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
+
+        if error != nil {
+            println("Error updating notification for characteristic: \(error.localizedDescription)")
+        }
+
+        println("Successfully subscribed to updates on \(characteristic)")
+    }
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
         
