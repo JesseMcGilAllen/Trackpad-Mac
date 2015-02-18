@@ -14,7 +14,11 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     let trackingCharacteristicUUID = CBUUID(string: "7754BF4E-9BB5-4719-9604-EE48A565F09C")
     
     var centralManager : CBCentralManager!
-    var discoveredPeripheral : CBPeripheral!
+    var discoveredPeripheral : CBPeripheral?
+    
+    var peripherals = [CBPeripheral]()
+    
+    var count = 1
     
     required init?(coder: NSCoder) {
         
@@ -25,6 +29,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     override func viewDidLoad() {
         super.viewDidLoad()
         centralManager = CBCentralManager(delegate: self, queue: nil)
+        discoveredPeripheral?.delegate = self
         
         
         
@@ -44,39 +49,29 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         if central.state == .PoweredOn {
             println("Powered On!")
             
-            central.scanForPeripheralsWithServices([trackpadServiceUUID], options: nil)
+            central.scanForPeripheralsWithServices([trackpadServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey : true])
         }
     }
     
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
-        
-        println("discoveredPeripheral: \(discoveredPeripheral)")
-        println("peripheral: \(peripheral)")
-        
-        if discoveredPeripheral != peripheral {
-            discoveredPeripheral = peripheral
-            println("Discovered \(discoveredPeripheral.identifier), RSSI: \(RSSI)!")
-        }
-        
-        
-        
-        centralManager.connectPeripheral(peripheral, options: nil)
-        
-        
-        
+
+
+        discoveredPeripheral = peripheral
+        peripheral.delegate = self
+        central.connectPeripheral(peripheral, options: nil)
+
+
         
     }
     
     func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
         println("Connected!")
         
+        
+        discoveredPeripheral = peripheral
         centralManager.stopScan()
         
-        peripheral.delegate = self
-
         peripheral.discoverServices([trackpadServiceUUID])
-        
-        
         
     }
     
@@ -95,7 +90,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
         for service in peripheral.services {
-            discoveredPeripheral.discoverCharacteristics([trackingCharacteristicUUID], forService: service as! CBService)
+            peripheral.discoverCharacteristics([trackingCharacteristicUUID], forService: service as! CBService)
         }
     }
     
@@ -107,11 +102,11 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         for characteristic in service.characteristics {
             let characteristicUUID = characteristic.UUID
-            println(characteristic.UUIDString)
+            println(characteristicUUID)
             println(trackingCharacteristicUUID.UUIDString)
             
             if characteristicUUID == trackingCharacteristicUUID {
-               discoveredPeripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
+               peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
                 println("Success!")
             }
             
@@ -120,20 +115,22 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
         
-        println("data updated")
+        println("Value updated")
+        
         if error != nil {
             println("Error updating characteristic: \(error.localizedDescription)")
         }
         
         let updatedData = characteristic.value()
-        let count = updatedData.length / sizeof(UInt32)
+
+        let count = updatedData.length / (sizeof(UInt32))
         
-        var dataArray = [UInt32](count: count, repeatedValue: 0)
+        var locationFloats = [UInt32](count: count, repeatedValue: 0)
         
-        updatedData.getBytes(&dataArray, length:count * sizeof(UInt32))
+        updatedData.getBytes(&locationFloats, length: count * sizeof(UInt32))
         
-        println(dataArray)
-        
+        println(locationFloats)
+    
     }
 }
 
