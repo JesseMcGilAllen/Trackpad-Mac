@@ -107,7 +107,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             if characteristicUUID == trackingCharacteristicUUID {
                peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
-                println("Success!")
+               peripheral.readValueForCharacteristic(characteristic as! CBCharacteristic)
+               println("Success!")
             }
             
         }
