@@ -108,7 +108,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             if characteristicUUID == trackingCharacteristicUUID {
                peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
-               peripheral.readValueForCharacteristic(characteristic as! CBCharacteristic)
+               
                println("Success!")
             }
             
@@ -123,7 +123,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
 
         println("Notification Value: \(characteristic.isNotifying)")
         println("Successfully subscribed to updates on \(characteristic)")
+        peripheral.readValueForCharacteristic(characteristic)
     }
+    
+    typealias DoublePoint = (x: Double, y: Double)
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
         
@@ -133,12 +136,20 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             println("Error updating characteristic: \(error.code)")
         }
         
-        let updatedValue = characteristic.value()
+        let data = characteristic.value()
         
-        println(updatedValue)
+        // println(updatedValue)
+        
+       
+        if (data.length == sizeof(DoublePoint)) {
+            var receivedPair = UnsafePointer<DoublePoint>(data.bytes).memory
+            var receivedPoint = CGPointMake(CGFloat(receivedPair.x), CGFloat(receivedPair.y))
+            
+            println(receivedPoint)
+        }
         
         
-
+        
     }
 }
 
