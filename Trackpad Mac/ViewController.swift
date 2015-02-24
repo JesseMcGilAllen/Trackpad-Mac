@@ -84,13 +84,14 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
     
     func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
-        
+        println("In Discovery")
         if error != nil {
             println("Error discovering service: \(error.localizedDescription)")
         }
         
         for service in peripheral.services {
             peripheral.discoverCharacteristics([trackingCharacteristicUUID], forService: service as! CBService)
+            println("Discovered!")
         }
     }
     
@@ -129,19 +130,15 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         println("Value updated")
         
         if error != nil {
-            println("Error updating characteristic: \(error.localizedDescription)")
+            println("Error updating characteristic: \(error.code)")
         }
         
-        let updatedData = characteristic.value()
+        let updatedValue = characteristic.value()
+        
+        println(updatedValue)
+        
+        
 
-        let count = updatedData.length / (sizeof(UInt32))
-        
-        var locationFloats = [UInt32](count: count, repeatedValue: 0)
-        
-        updatedData.getBytes(&locationFloats, length: count * sizeof(UInt32))
-        
-        println(locationFloats)
-    
     }
 }
 
