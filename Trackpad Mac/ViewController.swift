@@ -126,7 +126,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         peripheral.readValueForCharacteristic(characteristic)
     }
     
-    typealias DoublePoint = (x: Double, y: Double)
+     typealias DoublePoint = (x: Double, y: Double)
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
         
@@ -137,16 +137,28 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
         let data = characteristic.value()
+        println(data)
         
         // println(updatedValue)
         
        
-        if (data.length == sizeof(DoublePoint)) {
-            var receivedPair = UnsafePointer<DoublePoint>(data.bytes).memory
-            var receivedPoint = CGPointMake(CGFloat(receivedPair.x), CGFloat(receivedPair.y))
-            
-            println(receivedPoint)
-        }
+        // if (data.length == sizeof(DoublePoint)) {
+        //var receivedPair = UnsafePointer<DoublePoint>(data.bytes).memory
+        //var receivedPoint = NSPoint(x: CGFloat(receivedPair.x), y: CGFloat(receivedPair.y))
+        
+        var dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
+        var testPoint = NSPointFromString(dataString as! String)
+        
+        //var updatedX = CGPointFromString(dataString)
+        
+        
+        // var convertedData = String(format: "x: \(receivedPair.x), \(receivedPair.y)")
+        // println(receivedPoint)
+        println(testPoint)
+        // }
+        
+        CGDisplayMoveCursorToPoint(CGMainDisplayID(), testPoint)
+        CGDisplayShowCursor(CGMainDisplayID())
         
         
         
