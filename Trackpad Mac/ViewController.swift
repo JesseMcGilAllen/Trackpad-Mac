@@ -134,6 +134,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         if error != nil {
             println("Error updating characteristic: \(error.code)")
+            return
         }
         
         let data = characteristic.value()
@@ -147,21 +148,24 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         //var receivedPoint = NSPoint(x: CGFloat(receivedPair.x), y: CGFloat(receivedPair.y))
         
         var dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
-        var testPoint = NSPointFromString(dataString as! String)
+        
+        if dataString != nil {
+            var testPoint = NSPointFromString(dataString as! String)
+            CGDisplayMoveCursorToPoint(CGMainDisplayID(), testPoint)
+            CGDisplayShowCursor(CGMainDisplayID())
+        }
+
+
+        
+
+
         
         //var updatedX = CGPointFromString(dataString)
         
         
         // var convertedData = String(format: "x: \(receivedPair.x), \(receivedPair.y)")
         // println(receivedPoint)
-        println(testPoint)
-        // }
-        
-        CGDisplayMoveCursorToPoint(CGMainDisplayID(), testPoint)
-        CGDisplayShowCursor(CGMainDisplayID())
-        
-        
-        
+
     }
 }
 
