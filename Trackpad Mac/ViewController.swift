@@ -10,15 +10,8 @@ import CoreBluetooth
 
 class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
     
-    let trackpadServiceUUID = CBUUID(string: "AB8A3096-046C-49DD-8709-0361EC31EFED")
-    let trackingCharacteristicUUID = CBUUID(string: "7754BF4E-9BB5-4719-9604-EE48A565F09C")
-    
     var centralManager : CBCentralManager!
     var discoveredPeripheral : CBPeripheral?
-    
-    var peripherals = [CBPeripheral]()
-    
-    var count = 1
     
     required init?(coder: NSCoder) {
         
@@ -27,51 +20,59 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        
         centralManager = CBCentralManager(delegate: self, queue: nil)
-        discoveredPeripheral?.delegate = self
         
-        
-        
-
-        // Do any additional setup after loading the view.
     }
 
-    override var representedObject: AnyObject? {
-        didSet {
-        // Update the view, if already loaded.
-        }
-    }
+    // MARK: Required to conform to CBCentralManagerDelegate Protocol
     
     func centralManagerDidUpdateState(central: CBCentralManager!) {
-    println("State: \(central.state.rawValue)")
+   
         
         if central.state == .PoweredOn {
             println("Powered On!")
             
-            central.scanForPeripheralsWithServices([trackpadServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey : true])
+            central.scanForPeripheralsWithServices([trackpadServiceUUID()], options: [CBCentralManagerScanOptionAllowDuplicatesKey : true])
         }
     }
+    
+    func trackpadServiceUUID() -> CBUUID {
+        
+        return CBUUID(string: "AB8A3096-046C-49DD-8709-0361EC31EFED")
+    }
+    
+    func trackingCharacteristicUUID() -> CBUUID {
+        
+        return CBUUID(string: "7754BF4E-9BB5-4719-9604-EE48A565F09C")
+    }
+    
+    // MARK: Discovering Peripherals
     
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
 
 
         discoveredPeripheral = peripheral
-        peripheral.delegate = self
+        discoveredPeripheral!.delegate = self
+        
         central.connectPeripheral(peripheral, options: nil)
 
 
         
     }
     
+    // MARK: Connecting Peripherals
+    
     func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
         println("Connected!")
         
         
-        discoveredPeripheral = peripheral
+        // discoveredPeripheral = peripheral
         centralManager.stopScan()
         
-        peripheral.discoverServices([trackpadServiceUUID])
+        peripheral.discoverServices([trackpadServiceUUID()])
         
     }
     
@@ -83,6 +84,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     }
     
+    // MARK: Discovering Services & Characteristics
+    
     func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
         println("In Discovery")
         if error != nil {
@@ -90,7 +93,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
         for service in peripheral.services {
-            peripheral.discoverCharacteristics([trackingCharacteristicUUID], forService: service as! CBService)
+            peripheral.discoverCharacteristics([trackingCharacteristicUUID()], forService: service as! CBService)
             println("Discovered!")
         }
     }
@@ -104,9 +107,9 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         for characteristic in service.characteristics {
             let characteristicUUID = characteristic.UUID
             println(characteristicUUID)
-            println(trackingCharacteristicUUID.UUIDString)
+            println(trackingCharacteristicUUID().UUIDString)
             
-            if characteristicUUID == trackingCharacteristicUUID {
+            if characteristicUUID == trackingCharacteristicUUID() {
                peripheral.setNotifyValue(true, forCharacteristic: characteristic as! CBCharacteristic)
                
                println("Success!")
@@ -122,11 +125,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
 
         println("Notification Value: \(characteristic.isNotifying)")
-        println("Successfully subscribed to updates on \(characteristic)")
-        peripheral.readValueForCharacteristic(characteristic)
+        
     }
     
-     typealias DoublePoint = (x: Double, y: Double)
+    // MARK: receiving data from iPad
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
         
@@ -138,35 +140,30 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
         let data = characteristic.value()
-        println(data)
         
-        // println(updatedValue)
-        
-       
-        // if (data.length == sizeof(DoublePoint)) {
-        //var receivedPair = UnsafePointer<DoublePoint>(data.bytes).memory
-        //var receivedPoint = NSPoint(x: CGFloat(receivedPair.x), y: CGFloat(receivedPair.y))
-        
-        var dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
-        
-        if dataString != nil {
-            var testPoint = NSPointFromString(dataString as! String)
-            CGDisplayMoveCursorToPoint(CGMainDisplayID(), testPoint)
-            CGDisplayShowCursor(CGMainDisplayID())
-        }
-
-
-        
-
-
-        
-        //var updatedX = CGPointFromString(dataString)
-        
-        
-        // var convertedData = String(format: "x: \(receivedPair.x), \(receivedPair.y)")
-        // println(receivedPoint)
+        movingCursor(pointFromData(data))
 
     }
+    
+    // MARK: moving cursor
+    
+    func movingCursor(location : NSPoint) {
+        if location != NSPoint(x: -1.0, y: 0.0) {
+            CGDisplayMoveCursorToPoint(CGMainDisplayID(), location)
+        }
+    }
+    
+    func pointFromData(data : NSData) -> NSPoint {
+        let dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
+        
+        if dataString != nil {
+            return NSPointFromString(dataString as! String)
+        } else {
+            return NSPoint(x: -1.0, y: 0)
+        }
+    }
+    
+    
 }
 
 
