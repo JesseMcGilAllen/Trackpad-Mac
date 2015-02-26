@@ -12,7 +12,9 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     var centralManager : CBCentralManager!
     var discoveredPeripheral : CBPeripheral?
-    var scalingFactor = CGPoint(x: 1.0, y: 1.0)
+    
+    var scalingFactor = NSPoint(x: 0.05, y: 0.05)
+    var trackingOffset = NSPoint(x: 0.0, y: 0.0)
     
     required init?(coder: NSCoder) {
         
@@ -47,6 +49,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     func trackpadServiceUUID() -> CBUUID {
         
         return CBUUID(string: "AB8A3096-046C-49DD-8709-0361EC31EFED")
+    }
+    
+    func beginTrackingCharacteristicUUID() -> CBUUID {
+        return CBUUID(string: "E0A13890-5CAB-4763-863C-B639132CE144")
     }
     
     func trackingCharacteristicUUID() -> CBUUID {
@@ -126,7 +132,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         
         
-        if characteristic.UUID == trackingCharacteristicUUID() {
+        if characteristic.UUID == trackingCharacteristicUUID() || characteristic.UUID == beginTrackingCharacteristicUUID() {
             peripheral.setNotifyValue(true, forCharacteristic: characteristic as CBCharacteristic)
             
             
@@ -160,7 +166,12 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         let data = characteristic.value()
         
-        if characteristic.UUID == trackingCharacteristicUUID() {
+        
+        if characteristic.UUID == beginTrackingCharacteristicUUID() {
+            
+            trackingOffset(pointFromData(data))
+            
+        } else if characteristic.UUID == trackingCharacteristicUUID() {
             
             movingCursor(pointFromData(data))
             
@@ -168,8 +179,9 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             calculateScalingFactor(nsRectFromData(data))
         }
-        
-        
+   
+ 
+
 
     }
     
@@ -178,7 +190,16 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     func movingCursor(location : NSPoint) {
         
         if location != NSPoint(x: -1.0, y: 0.0) {
-            CGDisplayMoveCursorToPoint(CGMainDisplayID(), location)
+            
+            let mouseLocation = NSEvent.mouseLocation()
+            let cursorLocation = NSPoint(x: mouseLocation.x, y: NSScreen.mainScreen()!.frame.size.height - NSEvent.mouseLocation().y)
+            let difference = differenceBetweenTwoPoints(location, startPoint: trackingOffset)
+            let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.2, y: 0.2))
+            let newLocation = addingTwoPoints(cursorLocation, pointB: movement)
+            
+            println("Mouse Location: \(mouseLocation)")
+            
+            CGDisplayMoveCursorToPoint(CGMainDisplayID(), newLocation)
         }
     }
     
@@ -189,7 +210,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         if dataString != nil {
             
             let point = NSPointFromString(dataString as! String)
-            return pointMultiplyScalar(point, scalar: scalingFactor)
+            return point
+            // return pointMultiplyScalar(point, scalar: scalingFactor)
             
         } else {
             
@@ -197,9 +219,27 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     }
     
-    func pointMultiplyScalar(point : CGPoint, scalar : CGPoint) -> CGPoint {
+    func trackingOffset(point : NSPoint) {
         
-        return CGPoint(x: point.x * scalar.x, y: point.y * scalar.y)
+        trackingOffset = point
+        println("Tracking Offset: \(trackingOffset).")
+        
+    }
+    
+    func addingTwoPoints(pointA : NSPoint, pointB : NSPoint) -> NSPoint {
+        
+        println("Point A: \(pointA), Point B: \(pointB) ")
+        return NSPoint(x: pointA.x + pointB.x, y: pointA.y + pointB.y)
+    }
+    
+    func differenceBetweenTwoPoints(endPoint : NSPoint, startPoint : NSPoint) -> NSPoint {
+        
+        return NSPoint(x: endPoint.x - startPoint.x, y: endPoint.y - startPoint.y)
+    }
+    
+    func pointMultiplyScalar(point : NSPoint, scalar : NSPoint) -> NSPoint {
+        
+        return NSPoint(x: point.x * scalar.x, y: point.y * scalar.y)
     }
     
     func calculateScalingFactor(screenSize : NSRect) {
@@ -213,8 +253,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         println("Scaling factor: \(scalingFactor)")
 
-        
-        
+
     }
     
     func nsRectFromData(data : NSData) -> NSRect {
