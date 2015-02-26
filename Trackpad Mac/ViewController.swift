@@ -12,7 +12,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     var centralManager : CBCentralManager!
     var discoveredPeripheral : CBPeripheral?
-    var scalingFactor : CGPoint!
+    var scalingFactor = CGPoint(x: 1.0, y: 1.0)
     
     required init?(coder: NSCoder) {
         
@@ -37,6 +37,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             println("Powered On!")
             
             central.scanForPeripheralsWithServices([trackpadServiceUUID()], options: [CBCentralManagerScanOptionAllowDuplicatesKey : true])
+        } else {
+            println(central.state.rawValue)
         }
     }
     
@@ -101,7 +103,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
         for service in peripheral.services {
-            peripheral.discoverCharacteristics([trackingCharacteristicUUID()], forService: service as! CBService)
+            peripheral.discoverCharacteristics(nil, forService: service as! CBService)
+            
             println("Discovered!")
         }
     }
@@ -115,6 +118,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         for characteristic in service.characteristics {
             
             discoverCharacteristic(characteristic as! CBCharacteristic, forPeripheral: peripheral)
+            
         }
     }
     
@@ -129,6 +133,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         } else if characteristic.UUID == screenSizeCharacteristicUUID() {
             
             peripheral.readValueForCharacteristic(characteristic)
+            
         }
         
         
@@ -147,8 +152,6 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     // MARK: receiving data from iPad
     
     func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
-        
-        println("Value updated")
         
         if error != nil {
             println("Error updating characteristic: \(error.code)")
@@ -207,6 +210,9 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         let yScale = monitor!.height / screenSize.height
         
         scalingFactor = CGPoint(x: xScale, y: yScale)
+        
+        println("Scaling factor: \(scalingFactor)")
+
         
         
     }
