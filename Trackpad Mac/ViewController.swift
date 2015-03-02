@@ -1,4 +1,4 @@
-//w//  ViewController.swift
+//  ViewController.swift
 //  Trackpad Mac
 //
 //  Created by Jesse McGil Allen on 2/14/15.
@@ -13,7 +13,6 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     var centralManager : CBCentralManager!
     var discoveredPeripheral : CBPeripheral?
     
-    var scalingFactor = NSPoint(x: 0.05, y: 0.05)
     var trackingOffset = NSPoint(x: 0.0, y: 0.0)
     
     required init?(coder: NSCoder) {
@@ -177,8 +176,11 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
         } else if characteristic.UUID == screenSizeCharacteristicUUID() {
             
-            calculateScalingFactor(nsRectFromData(data))
+            println("Screen Size: \(nsRectFromData(data)).")
+            
         }
+        
+        
    
  
 
@@ -194,10 +196,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             let mouseLocation = NSEvent.mouseLocation()
             let cursorLocation = NSPoint(x: mouseLocation.x, y: NSScreen.mainScreen()!.frame.size.height - NSEvent.mouseLocation().y)
             let difference = differenceBetweenTwoPoints(location, startPoint: trackingOffset)
-            let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.2, y: 0.2))
+            let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.15, y: 0.15))
             let newLocation = addingTwoPoints(cursorLocation, pointB: movement)
             
-            println("Mouse Location: \(mouseLocation)")
+            
             
             CGDisplayMoveCursorToPoint(CGMainDisplayID(), newLocation)
         }
@@ -211,7 +213,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             let point = NSPointFromString(dataString as! String)
             return point
-            // return pointMultiplyScalar(point, scalar: scalingFactor)
+            
             
         } else {
             
@@ -226,11 +228,15 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
     }
     
+    // MARK: Math
+    
     func addingTwoPoints(pointA : NSPoint, pointB : NSPoint) -> NSPoint {
         
-        println("Point A: \(pointA), Point B: \(pointB) ")
+        
         return NSPoint(x: pointA.x + pointB.x, y: pointA.y + pointB.y)
     }
+    
+    
     
     func differenceBetweenTwoPoints(endPoint : NSPoint, startPoint : NSPoint) -> NSPoint {
         
@@ -242,19 +248,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         return NSPoint(x: point.x * scalar.x, y: point.y * scalar.y)
     }
     
-    func calculateScalingFactor(screenSize : NSRect) {
-        
-        let monitor = NSScreen.mainScreen()?.frame
-        
-        let xScale = monitor!.width / screenSize.width
-        let yScale = monitor!.height / screenSize.height
-        
-        scalingFactor = CGPoint(x: xScale, y: yScale)
-        
-        println("Scaling factor: \(scalingFactor)")
 
-
-    }
+    // MARK: Getting peripheral screen size
     
     func nsRectFromData(data : NSData) -> NSRect {
         let dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
