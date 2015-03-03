@@ -262,6 +262,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             switch eventString as! String {
                 case "Right Click":
                     rightClick()
+
+                case "Double Click":
+                    doubleClick()
+                        
                 
                 
 
@@ -289,6 +293,23 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), rightClickDown)
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), rightClickUp)
+    }
+
+    func doubleClick() {
+        
+        let doubleClick = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+        CGEventSetIntegerValueField(doubleClick, CGEventField(kCGMouseEventClickState), 2)
+        
+        CGEventSetType(doubleClick, kCGEventLeftMouseUp);
+        CGEventSetType(doubleClick, kCGEventLeftMouseDown);
+        
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
+
+        
+        CGEventSetType(doubleClick, kCGEventLeftMouseUp);
+        CGEventSetType(doubleClick, kCGEventLeftMouseDown);
+        
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
     }
 
 
