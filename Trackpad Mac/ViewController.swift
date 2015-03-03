@@ -168,7 +168,6 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         let data = characteristic.value()
         
-        
         if characteristic.UUID == beginTrackingCharacteristicUUID() {
             
             trackingOffset(pointFromData(data))
@@ -221,7 +220,6 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     func trackingOffset(point : NSPoint) {
         
         trackingOffset = point
-        println("Tracking Offset: \(trackingOffset).")
         
     }
     
@@ -265,47 +263,36 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
 
                 case "Double Click":
                     doubleClick()
-                        
                 
-                
-
                 default:
                     leftClick()
             }
-            
-            
-            
-            
         }
     }
+    
+    // MARK: Click Events
 
     func leftClick() {
-        let leftClick = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
-        //let leftClickUp = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseUp), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+        let click = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
         
-        CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClick)
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), click)
         
-        CGEventSetType(leftClick, kCGEventLeftMouseUp);
+        CGEventSetType(click, kCGEventLeftMouseUp);
         
-        CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClick)
-        
-        
-        // CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClickUp)
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), click)
+
     }
     
     func rightClick() {
-        let rightClick = CGEventCreateMouseEvent(nil, CGEventType(kCGEventRightMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonRight)).takeUnretainedValue()
-        //let rightClickUp = CGEventCreateMouseEvent(nil, CGEventType(kCGEventRightMouseUp), cursorLocation(), CGMouseButton(kCGMouseButtonRight)).takeUnretainedValue()
+        let click = CGEventCreateMouseEvent(nil, CGEventType(kCGEventRightMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonRight)).takeUnretainedValue()
         
-        CGEventPost(CGEventTapLocation(kCGHIDEventTap), rightClick)
-        CGEventSetType(rightClick, kCGEventRightMouseUp);
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), click)
+        CGEventSetType(click, kCGEventRightMouseUp);
         
-         CGEventPost(CGEventTapLocation(kCGHIDEventTap), rightClick)
+         CGEventPost(CGEventTapLocation(kCGHIDEventTap), click)
     }
 
     func doubleClick() {
-        
-        println("double Click called")
         
         let doubleClick = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
@@ -321,13 +308,5 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         CGEventSetType(doubleClick, kCGEventLeftMouseUp);
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
         
-//        CGEventSetType(doubleClick, kCGEventLeftMouseUp);
-//        CGEventSetType(doubleClick, kCGEventLeftMouseDown);
-//        
-//        CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
     }
-
-
-    
-    
 }
