@@ -20,7 +20,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         super.init(coder: coder)
         
     }
-
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -28,11 +28,15 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         centralManager = CBCentralManager(delegate: self, queue: nil)
         
     }
-
+    
+    override func becomeFirstResponder() -> Bool {
+        return true
+    }
+    
     // MARK: Required to conform to CBCentralManagerDelegate Protocol
     
     func centralManagerDidUpdateState(central: CBCentralManager!) {
-   
+        
         
         if central.state == .PoweredOn {
             println("Powered On!")
@@ -44,7 +48,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
     
     // MARK: UUIDs
-
+    
     func trackpadServiceUUID() -> CBUUID {
         
         return CBUUID(string: "AB8A3096-046C-49DD-8709-0361EC31EFED")
@@ -59,22 +63,21 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         return CBUUID(string: "7754BF4E-9BB5-4719-9604-EE48A565F09C")
     }
     
-    func screenSizeCharacteristicUUID() -> CBUUID {
-        
-        return CBUUID(string: "92241F88-3A7E-4DEA-8DE5-12066D690250")
+    func eventCharacteristicUUID() -> CBUUID {
+        return CBUUID(string: "DCF9D966-06D7-4663-8811-3E1A0B75EFB4")
     }
     
     // MARK: Discovering Peripherals
     
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
-
-
+        
+        
         discoveredPeripheral = peripheral
         discoveredPeripheral!.delegate = self
         
         central.connectPeripheral(peripheral, options: nil)
-
-
+        
+        
         
     }
     
@@ -131,25 +134,25 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         
         
-        if characteristic.UUID == trackingCharacteristicUUID() || characteristic.UUID == beginTrackingCharacteristicUUID() {
-            peripheral.setNotifyValue(true, forCharacteristic: characteristic as CBCharacteristic)
-            
-            
-        } else if characteristic.UUID == screenSizeCharacteristicUUID() {
-            
-            peripheral.readValueForCharacteristic(characteristic)
-            
-        }
+        //if characteristic.UUID == trackingCharacteristicUUID() || characteristic.UUID == beginTrackingCharacteristicUUID() {
+        peripheral.setNotifyValue(true, forCharacteristic: characteristic as CBCharacteristic)
+        
+        
+        // } else if characteristic.UUID == screenSizeCharacteristicUUID() {
+        
+        //     peripheral.readValueForCharacteristic(characteristic)
+        
+        //  }
         
         
     }
     
     func peripheral(peripheral: CBPeripheral!, didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
-
+        
         if error != nil {
             println("Error updating notification for characteristic: \(error.localizedDescription)")
         }
-
+        
         println("Notification Value: \(characteristic.isNotifying)")
         
     }
@@ -174,17 +177,11 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             movingCursor(pointFromData(data))
             
-        } else if characteristic.UUID == screenSizeCharacteristicUUID() {
+        } else if characteristic.UUID == eventCharacteristicUUID() {
             
-            println("Screen Size: \(nsRectFromData(data)).")
+            eventFromData(data)
             
         }
-        
-        
-   
- 
-
-
     }
     
     // MARK: moving cursor
@@ -193,11 +190,11 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         if location != NSPoint(x: -1.0, y: 0.0) {
             
-            let mouseLocation = NSEvent.mouseLocation()
-            let cursorLocation = NSPoint(x: mouseLocation.x, y: NSScreen.mainScreen()!.frame.size.height - NSEvent.mouseLocation().y)
+            
+            let cursorLoc = cursorLocation() as NSPoint
             let difference = differenceBetweenTwoPoints(location, startPoint: trackingOffset)
-            let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.15, y: 0.15))
-            let newLocation = addingTwoPoints(cursorLocation, pointB: movement)
+            let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.10, y: 0.10))
+            let newLocation = addingTwoPoints(cursorLoc, pointB: movement)
             
             
             
@@ -228,6 +225,12 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
     }
     
+    func cursorLocation() -> CGPoint {
+        
+        let mouseLocation = NSEvent.mouseLocation()
+        return CGPoint(x: mouseLocation.x, y: NSScreen.mainScreen()!.frame.size.height - mouseLocation.y)
+    }
+    
     // MARK: Math
     
     func addingTwoPoints(pointA : NSPoint, pointB : NSPoint) -> NSPoint {
@@ -248,22 +251,27 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         return NSPoint(x: point.x * scalar.x, y: point.y * scalar.y)
     }
     
-
-    // MARK: Getting peripheral screen size
+    // MARK: Event Characteristic
     
-    func nsRectFromData(data : NSData) -> NSRect {
-        let dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
+    func eventFromData(data: NSData) {
         
-        if dataString != nil {
+        let eventString = NSString(data: data, encoding: NSUTF8StringEncoding)
+        
+        if eventString != nil {
             
-            return NSRectFromString(dataString as! String)
+            println("in click event")
             
-        } else {
+            let mouseLocation = NSEvent.mouseLocation() as CGPoint
             
-            return NSRect( x: 0, y: 0, width: 0, height: 0)
+            
+            let leftClickDown = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+            let leftClickUp = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseUp), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+            
+            CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClickDown)
+            CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClickUp)
+            
+            
         }
-        
     }
+    
 }
-
-
