@@ -192,7 +192,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             let cursorLoc = cursorLocation() as NSPoint
             let difference = differenceBetweenTwoPoints(location, startPoint: trackingOffset)
-            let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.10, y: 0.10))
+            let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.05, y: 0.05))
             let newLocation = addingTwoPoints(cursorLoc, pointB: movement)
             
             
