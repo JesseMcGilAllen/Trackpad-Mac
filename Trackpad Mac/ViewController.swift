@@ -305,13 +305,20 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
 
     func doubleClick() {
         
-        let doubleClick = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
-        CGEventSetIntegerValueField(doubleClick, CGEventField(kCGMouseEventClickState), 2)
+        println("double Click called")
         
+        let doubleClick = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
         
         CGEventSetType(doubleClick, kCGEventLeftMouseUp);
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
+
+        CGEventSetIntegerValueField(doubleClick, CGEventField(kCGMouseEventClickState), 2)
         
+        CGEventSetType(doubleClick, kCGEventLeftMouseDown);
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
+        
+        CGEventSetType(doubleClick, kCGEventLeftMouseUp);
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
         
 //        CGEventSetType(doubleClick, kCGEventLeftMouseUp);
