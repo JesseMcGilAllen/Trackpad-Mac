@@ -259,19 +259,39 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         if eventString != nil {
             
-            println("in click event")
+            switch eventString as! String {
+                case "Right Click":
+                    rightClick()
+                
+                
+
+                default:
+                    leftClick()
+            }
             
-            let mouseLocation = NSEvent.mouseLocation() as CGPoint
             
-            
-            let leftClickDown = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
-            let leftClickUp = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseUp), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
-            
-            CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClickDown)
-            CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClickUp)
             
             
         }
     }
+
+    func leftClick() {
+        let leftClickDown = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+        let leftClickUp = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseUp), cursorLocation(), CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+        
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClickDown)
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), leftClickUp)
+    }
+    
+    func rightClick() {
+        let rightClickDown = CGEventCreateMouseEvent(nil, CGEventType(kCGEventRightMouseDown), cursorLocation(), CGMouseButton(kCGMouseButtonRight)).takeUnretainedValue()
+        let rightClickUp = CGEventCreateMouseEvent(nil, CGEventType(kCGEventRightMouseUp), cursorLocation(), CGMouseButton(kCGMouseButtonRight)).takeUnretainedValue()
+        
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), rightClickDown)
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), rightClickUp)
+    }
+
+
+    
     
 }
