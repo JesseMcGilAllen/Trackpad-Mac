@@ -261,6 +261,9 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
                
             case "control":
                 controlDown()
+            
+            case "release control":
+                controlUp()
                
             default:
                 leftClick()
@@ -316,6 +319,14 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         CGEventSetType(controlDown, kCGEventKeyDown)
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), controlDown)
         
+    }
+    
+    func controlUp() {
+        let keyCode = CGKeyCode(59)
+        let controlUp = CGEventCreateKeyboardEvent(nil,keyCode, false).takeUnretainedValue()
+        
+        CGEventSetType(controlUp, kCGEventKeyUp)
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), controlUp)
     }
     
 }
