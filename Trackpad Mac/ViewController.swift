@@ -66,6 +66,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     func eventCharacteristicUUID() -> CBUUID {
         return CBUUID(string: "DCF9D966-06D7-4663-8811-3E1A0B75EFB4")
     }
+
+    func controlCharacteristicUUID() -> CBUUID {
+        return CBUUID(string: "0B8A8D8A-80B0-4042-AE95-0B6B75F17F9D")
+    }
     
     // MARK: Discovering Peripherals
     
@@ -180,7 +184,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             eventFromData(data)
             
+        } else if characteristic.UUID == controlCharacteristicUUID() {
+        
         }
+        
     }
     
     // MARK: moving cursor
