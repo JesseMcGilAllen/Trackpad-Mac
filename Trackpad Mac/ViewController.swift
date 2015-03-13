@@ -260,7 +260,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
                 doubleClick()
                
             case "control":
-                controlTapped()
+                controlDown()
                
             default:
                 leftClick()
@@ -308,7 +308,13 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
     }
     
-    func controlTapped() {
+    func controlDown() {
+        
+        let keyCode = CGKeyCode(59)
+        let controlDown = CGEventCreateKeyboardEvent(nil,keyCode, true).takeUnretainedValue()
+        
+        CGEventSetType(controlDown, kCGEventKeyDown)
+        CGEventPost(CGEventTapLocation(kCGHIDEventTap), controlDown)
         
     }
     
