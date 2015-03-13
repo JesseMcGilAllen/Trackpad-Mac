@@ -171,21 +171,20 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
         let data = characteristic.value()
+        let dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
         
         if characteristic.UUID == beginTrackingCharacteristicUUID() {
             
-            trackingOffset(pointFromData(data))
+            trackingOffset(pointFromString(dataString as! String))
             
         } else if characteristic.UUID == trackingCharacteristicUUID() {
             
-            movingCursor(pointFromData(data))
+            movingCursor(pointFromString(dataString as! String))
             
         } else if characteristic.UUID == eventCharacteristicUUID() {
             
-            eventFromData(data)
+            eventFromString(dataString as! String)
             
-        } else if characteristic.UUID == controlCharacteristicUUID() {
-        
         }
         
     }
@@ -208,20 +207,13 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     }
     
-    func pointFromData(data : NSData) -> NSPoint {
+    func pointFromString(pointString : String) -> NSPoint {
         
-        let dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
+    
         
-        if dataString != nil {
-            
-            let point = NSPointFromString(dataString as! String)
-            return point
-            
-            
-        } else {
-            
-            return NSPoint(x: -1.0, y: 0)
-        }
+        let point = NSPointFromString(pointString)
+        return point
+        
     }
     
     func trackingOffset(point : NSPoint) {
@@ -258,22 +250,21 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     // MARK: Event Characteristic
     
-    func eventFromData(data: NSData) {
+    func eventFromString(eventString: String) {
         
-        let eventString = NSString(data: data, encoding: NSUTF8StringEncoding)
-        
-        if eventString != nil {
-            
-            switch eventString as! String {
-                case "Right Click":
-                    rightClick()
+        switch eventString {
+            case "Right Click":
+                rightClick()
 
-                case "Double Click":
-                    doubleClick()
-                
-                default:
-                    leftClick()
-            }
+            case "Double Click":
+                doubleClick()
+               
+            case "control":
+                controlTapped()
+               
+            default:
+                leftClick()
+            
         }
     }
     
@@ -316,4 +307,9 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
         
     }
+    
+    func controlTapped() {
+        
+    }
+    
 }
