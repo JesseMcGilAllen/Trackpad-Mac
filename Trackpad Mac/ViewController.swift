@@ -137,17 +137,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     func discoverCharacteristic(characteristic : CBCharacteristic, forPeripheral peripheral: CBPeripheral) {
         
         
-        
-        //if characteristic.UUID == trackingCharacteristicUUID() || characteristic.UUID == beginTrackingCharacteristicUUID() {
         peripheral.setNotifyValue(true, forCharacteristic: characteristic as CBCharacteristic)
-        
-        
-        // } else if characteristic.UUID == screenSizeCharacteristicUUID() {
-        
-        //     peripheral.readValueForCharacteristic(characteristic)
-        
-        //  }
-        
         
     }
     
@@ -195,21 +185,16 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         if location != NSPoint(x: -1.0, y: 0.0) {
             
-            
             let cursorLoc = cursorLocation() as NSPoint
             let difference = differenceBetweenTwoPoints(location, startPoint: trackingOffset)
             let movement = pointMultiplyScalar(difference, scalar: NSPoint(x: 0.05, y: 0.05))
             let newLocation = addingTwoPoints(cursorLoc, pointB: movement)
-            
-            
             
             CGDisplayMoveCursorToPoint(CGMainDisplayID(), newLocation)
         }
     }
     
     func pointFromString(pointString : String) -> NSPoint {
-        
-    
         
         let point = NSPointFromString(pointString)
         return point
