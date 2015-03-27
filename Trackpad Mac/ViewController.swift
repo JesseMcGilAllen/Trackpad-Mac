@@ -243,13 +243,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
 
             case "Double Click":
                 doubleClick()
-               
-            case "control":
-                controlDown()
             
-            case "release control":
-                controlUp()
-               
             default:
                 leftClick()
             
@@ -294,24 +288,6 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         CGEventSetType(doubleClick, kCGEventLeftMouseUp);
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
         
-    }
-    
-    func controlDown() {
-        
-        let keyCode = CGKeyCode(59)
-        let controlDown = CGEventCreateKeyboardEvent(nil,keyCode, true).takeUnretainedValue()
-        
-        CGEventSetType(controlDown, kCGEventKeyDown)
-        CGEventPost(CGEventTapLocation(kCGHIDEventTap), controlDown)
-        
-    }
-    
-    func controlUp() {
-        let keyCode = CGKeyCode(59)
-        let controlUp = CGEventCreateKeyboardEvent(nil,keyCode, false).takeUnretainedValue()
-        
-        CGEventSetType(controlUp, kCGEventKeyUp)
-        CGEventPost(CGEventTapLocation(kCGHIDEventTap), controlUp)
     }
     
 }
