@@ -67,8 +67,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         return CBUUID(string: "DCF9D966-06D7-4663-8811-3E1A0B75EFB4")
     }
 
-    func controlCharacteristicUUID() -> CBUUID {
-        return CBUUID(string: "0B8A8D8A-80B0-4042-AE95-0B6B75F17F9D")
+    func scrollingCharacteristicUUID() -> CBUUID {
+        return CBUUID(string: "F2021764-206F-46D5-8AD9-F710A484FAEC")
     }
     
     // MARK: Discovering Peripherals
