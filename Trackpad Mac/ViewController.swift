@@ -238,10 +238,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     func eventFromString(eventString: String) {
         
         switch eventString {
-            case "Right Click":
+            case "right click":
                 rightClick()
 
-            case "Double Click":
+            case "double click":
                 doubleClick()
             
             default:
