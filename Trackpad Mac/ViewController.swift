@@ -7,6 +7,7 @@
 
 import Cocoa
 import CoreBluetooth
+import CoreGraphics
 
 class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
     
@@ -175,8 +176,32 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
             
             eventFromString(dataString as! String)
             
+        } else if characteristic.UUID == scrollingCharacteristicUUID() {
+            
+            scrollWithPoint(pointFromString(dataString as! String))
         }
         
+    }
+    
+    // MARK: Math
+    
+    func addingTwoPoints(pointA : NSPoint, pointB : NSPoint) -> NSPoint {
+        
+        
+        return NSPoint(x: pointA.x + pointB.x, y: pointA.y + pointB.y)
+    }
+    
+    
+    
+    func differenceBetweenTwoPoints(endPoint : NSPoint, startPoint : NSPoint) -> NSPoint {
+       
+        
+        return NSPoint(x: endPoint.x - startPoint.x, y: endPoint.y - startPoint.y)
+    }
+    
+    func pointMultiplyScalar(point : NSPoint, scalar : NSPoint) -> NSPoint {
+        
+        return NSPoint(x: point.x * scalar.x, y: point.y * scalar.y)
     }
     
     // MARK: moving cursor
@@ -213,25 +238,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         return CGPoint(x: mouseLocation.x, y: NSScreen.mainScreen()!.frame.size.height - mouseLocation.y)
     }
     
-    // MARK: Math
     
-    func addingTwoPoints(pointA : NSPoint, pointB : NSPoint) -> NSPoint {
-        
-        
-        return NSPoint(x: pointA.x + pointB.x, y: pointA.y + pointB.y)
-    }
-    
-    
-    
-    func differenceBetweenTwoPoints(endPoint : NSPoint, startPoint : NSPoint) -> NSPoint {
-        
-        return NSPoint(x: endPoint.x - startPoint.x, y: endPoint.y - startPoint.y)
-    }
-    
-    func pointMultiplyScalar(point : NSPoint, scalar : NSPoint) -> NSPoint {
-        
-        return NSPoint(x: point.x * scalar.x, y: point.y * scalar.y)
-    }
     
     // MARK: Event Characteristic
     
@@ -287,6 +294,24 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         CGEventSetType(doubleClick, kCGEventLeftMouseUp);
         CGEventPost(CGEventTapLocation(kCGHIDEventTap), doubleClick)
+        
+    }
+    
+    // MARK: Scrolling
+    /* TODO: Figure out how to implement scroll event.
+             Typical method only in Obj-C */
+    
+    func scrollWithPoint(point : NSPoint) {
+        let difference = differenceBetweenTwoPoints(point, startPoint: trackingOffset)
+        // CGEvent
+        //let scrollEvent = CGEventCreateScrollWheelEvent(nil, CGEventType(kCGScrollEventUnitPixel), 2, Int(difference.y), Int(difference.x))
+        //CGEventCreateScrollWheelEvent
+        // Crashes
+        // let scrollEvent = CGEventCreateMouseEvent(nil, CGEventType(kCGEventScrollWheel), difference, CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+        
+        // println("difference: \(difference)")
+        
+        // CGEventPost(CGEventTapLocation(kCGHIDEventTap), scrollEvent)
         
     }
     
