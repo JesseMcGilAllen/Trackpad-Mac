@@ -10,4 +10,6 @@
 
 @interface ScrollWheelHandler : NSObject
 
++(void)scrollUsingPoint:(CGPoint) point;
+
 @end

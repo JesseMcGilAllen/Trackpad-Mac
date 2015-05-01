@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3708E3741AF40592003234CA /* ScrollWheelHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 3708E3731AF40592003234CA /* ScrollWheelHandler.m */; };
 		3743A2F31A9063E7006C87F5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3743A2F21A9063E7006C87F5 /* AppDelegate.swift */; };
 		3743A2F51A9063E7006C87F5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3743A2F41A9063E7006C87F5 /* ViewController.swift */; };
 		3743A2F71A9063E7006C87F5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3743A2F61A9063E7006C87F5 /* Images.xcassets */; };
@@ -25,6 +26,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3708E3711AF40591003234CA /* Trackpad Mac-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Trackpad Mac-Bridging-Header.h"; sourceTree = "<group>"; };
+		3708E3721AF40592003234CA /* ScrollWheelHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollWheelHandler.h; sourceTree = "<group>"; };
+		3708E3731AF40592003234CA /* ScrollWheelHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollWheelHandler.m; sourceTree = "<group>"; };
 		3743A2ED1A9063E7006C87F5 /* Trackpad Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Trackpad Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3743A2F11A9063E7006C87F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3743A2F21A9063E7006C87F5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -77,9 +81,12 @@
 			children = (
 				3743A2F21A9063E7006C87F5 /* AppDelegate.swift */,
 				3743A2F41A9063E7006C87F5 /* ViewController.swift */,
+				3708E3721AF40592003234CA /* ScrollWheelHandler.h */,
+				3708E3731AF40592003234CA /* ScrollWheelHandler.m */,
 				3743A2F61A9063E7006C87F5 /* Images.xcassets */,
 				3743A2F81A9063E7006C87F5 /* Main.storyboard */,
 				3743A2F01A9063E7006C87F5 /* Supporting Files */,
+				3708E3711AF40591003234CA /* Trackpad Mac-Bridging-Header.h */,
 			);
 			path = "Trackpad Mac";
 			sourceTree = "<group>";
@@ -210,6 +217,7 @@
 			files = (
 				3743A2F51A9063E7006C87F5 /* ViewController.swift in Sources */,
 				3743A2F31A9063E7006C87F5 /* AppDelegate.swift in Sources */,
+				3708E3741AF40592003234CA /* ScrollWheelHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,10 +333,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "Trackpad Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Trackpad Mac/Trackpad Mac-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -336,10 +347,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "Trackpad Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Trackpad Mac/Trackpad Mac-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -398,6 +411,7 @@
 				3743A30B1A9063E8006C87F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3743A30C1A9063E8006C87F5 /* Build configuration list for PBXNativeTarget "Trackpad MacTests" */ = {
 			isa = XCConfigurationList;
@@ -406,6 +420,7 @@
 				3743A30E1A9063E8006C87F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

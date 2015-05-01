@@ -7,7 +7,22 @@
 //
 
 #import "ScrollWheelHandler.h"
+@import CoreGraphics;
 
 @implementation ScrollWheelHandler
+
++(void)scrollUsingPoint:(CGPoint) point {
+    
+    int wheelCount = 2;
+    int scrollX = point.x;
+    int scrollY = point.y;
+    
+    CGEventRef scrollWheelEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, wheelCount, scrollY, scrollX);
+    
+    CGEventPost(kCGHIDEventTap, scrollWheelEvent);
+    
+    CFRelease(scrollWheelEvent);
+    
+}
 
 @end
