@@ -9,6 +9,7 @@ import Cocoa
 import CoreBluetooth
 import CoreGraphics
 
+
 class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
     
     var centralManager : CBCentralManager!
@@ -303,6 +304,10 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     func scrollWithPoint(point : NSPoint) {
         let difference = differenceBetweenTwoPoints(point, startPoint: trackingOffset)
+        
+        ScrollWheelHandler.scrollUsingPoint(difference)
+        
+        
         // CGEvent
         //let scrollEvent = CGEventCreateScrollWheelEvent(nil, CGEventType(kCGScrollEventUnitPixel), 2, Int(difference.y), Int(difference.x))
         //CGEventCreateScrollWheelEvent

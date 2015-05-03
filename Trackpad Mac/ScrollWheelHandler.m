@@ -11,7 +11,7 @@
 
 @implementation ScrollWheelHandler
 
-+(void)scrollUsingPoint:(CGPoint) point {
++(void)scrollUsingPoint:(NSPoint) point {
     
     int wheelCount = 2;
     int scrollX = point.x;
