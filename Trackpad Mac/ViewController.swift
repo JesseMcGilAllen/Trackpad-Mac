@@ -73,6 +73,8 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
         return CBUUID(string: "F2021764-206F-46D5-8AD9-F710A484FAEC")
     }
     
+    
+    
     // MARK: Discovering Peripherals
     
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
@@ -299,24 +301,11 @@ class ViewController: NSViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
     
     // MARK: Scrolling
-    /* TODO: Figure out how to implement scroll event.
-             Typical method only in Obj-C */
     
     func scrollWithPoint(point : NSPoint) {
         let difference = differenceBetweenTwoPoints(point, startPoint: trackingOffset)
         
         ScrollWheelHandler.scrollUsingPoint(difference)
-        
-        
-        // CGEvent
-        //let scrollEvent = CGEventCreateScrollWheelEvent(nil, CGEventType(kCGScrollEventUnitPixel), 2, Int(difference.y), Int(difference.x))
-        //CGEventCreateScrollWheelEvent
-        // Crashes
-        // let scrollEvent = CGEventCreateMouseEvent(nil, CGEventType(kCGEventScrollWheel), difference, CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
-        
-        // println("difference: \(difference)")
-        
-        // CGEventPost(CGEventTapLocation(kCGHIDEventTap), scrollEvent)
         
     }
     
